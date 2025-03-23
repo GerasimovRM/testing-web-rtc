@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from "react";
 
 const VideoCall = ({ socket, userId }) => {
   const [peers, setPeers] = useState({});
-  const [isOfferReceived, setIsOfferReceived] = useState(false);
-  const [isAnswerReceived, setIsAnswerReceived] = useState(false);
+  const isOfferReceived = useRef(false);
+  const isAnswerReceived = useRef(false);
   const localVideoRef = useRef(null);
   const peerConnections = useRef({});
   const iceCandidates = useRef({}); // Храним кандидаты, если они приходят до offer
@@ -73,7 +73,7 @@ const VideoCall = ({ socket, userId }) => {
       if (event.candidate) {
         console.log(`ICE candidate для ${userId}:`, event.candidate);
         // Если offer был получен, сразу отправляем кандидаты
-        if (isOfferReceived || isAnswerReceived) {
+        if (isOfferReceived.current || isAnswerReceived.current) {
           socket.send(JSON.stringify({
             type: "candidate-from-front",
             targetUserId: userId,
@@ -129,7 +129,7 @@ const VideoCall = ({ socket, userId }) => {
       console.log(`Отправляем answer для ${fromUserId}`);
       socket.send(JSON.stringify({ type: "answer-from-front", targetUserId: fromUserId, sdp: answer }));
 
-      setIsOfferReceived(true); // Разрешаем обработку кандидатов после получения offer
+      isOfferReceived.current = false; // Разрешаем обработку кандидатов после получения offer
 
       // Добавляем отложенные кандидаты
       if (iceCandidates.current[fromUserId]) {
@@ -147,7 +147,7 @@ const VideoCall = ({ socket, userId }) => {
   const handleAnswer = (fromUserId, sdp) => {
     try {
       peerConnections.current[fromUserId]?.setRemoteDescription(new RTCSessionDescription(sdp));
-      setIsAnswerReceived(true)
+      isAnswerReceived.current = true
     } catch (error) {
       console.error("Ошибка при обработке answer:", error);
     }

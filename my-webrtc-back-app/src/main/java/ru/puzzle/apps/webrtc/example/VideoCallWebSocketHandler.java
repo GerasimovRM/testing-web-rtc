@@ -23,9 +23,7 @@ public class VideoCallWebSocketHandler extends TextWebSocketHandler {
                 handleJoin(session, jsonMessage);
                 break;
 
-            case "offer-from-front":
-            case "answer-from-front":
-            case "candidate-from-front":
+            case "answer-from-front", "offer-from-front", "candidate-from-front":
                 handleOfferAnswerCandidate(session, message);
                 break;
         }
