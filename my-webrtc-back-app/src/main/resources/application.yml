@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: my-webrtc-back-app
+server:
+  address: 0.0.0.0
+
+
