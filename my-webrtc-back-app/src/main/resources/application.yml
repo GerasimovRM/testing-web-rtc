@@ -3,5 +3,8 @@ spring:
     name: my-webrtc-back-app
 server:
   address: 0.0.0.0
+logging:
+  level:
+    root: debug
 
 
